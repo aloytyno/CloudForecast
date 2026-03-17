@@ -1,0 +1,6 @@
+customtkinter
+requests
+pandas
+tkintermapview
+matplotlib
+astral
