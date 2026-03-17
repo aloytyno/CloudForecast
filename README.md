@@ -76,3 +76,16 @@ All forecast data comes from FMI's open data services:
    ```
 
 Requires Python 3.11 or later.
+
+---
+
+## Building a standalone executable
+
+You can package the app into a single `.exe` using PyInstaller:
+
+```powershell
+.\venv\Scripts\python.exe -m pip install pyinstaller
+.\venv\Scripts\python.exe -m PyInstaller pilviennuste.spec
+```
+
+The executable is written to `dist\PilviEnnuste.exe` (~70 MB). No Python installation is required to run it — just share the `.exe`.

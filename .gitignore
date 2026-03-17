@@ -23,5 +23,9 @@ Thumbs.db
 # Claude Code session data
 .claude/
 
+# PyInstaller
+build/
+dist/
+
 # Misc
 wms_capabilities.xml
