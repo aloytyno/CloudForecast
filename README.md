@@ -62,14 +62,17 @@ All forecast data comes from FMI's open data services:
 ## Installation
 
 1. Clone the repository.
-2. Create and activate a Python virtual environment.
-3. Install dependencies:
+2. Create and activate a Python virtual environment:
+   ```powershell
+   python -m venv venv
    ```
-   pip install -r requirements.txt
+   > **Note:** PowerShell may block the activation script due to execution policy. Instead of activating, invoke the venv's Python directly:
+   ```powershell
+   .\venv\Scripts\python.exe -m pip install -r requirements.txt
    ```
-4. Run the app:
-   ```
-   python main.py
+3. Run the app:
+   ```powershell
+   .\venv\Scripts\python.exe main.py
    ```
 
 Requires Python 3.11 or later.
