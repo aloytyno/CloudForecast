@@ -15,6 +15,8 @@ PilviEnnuste fetches cloud cover forecasts from the Finnish Meteorological Insti
 
 ## How to use it
 
+![App screenshot](assets/guide.png)
+
 ### Selecting a location
 
 Click anywhere on the map to select a location. The app fetches a point forecast for that spot and updates the chart on the right. Helsinki is selected automatically on startup.
