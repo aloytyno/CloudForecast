@@ -38,7 +38,7 @@ Above the chart, two lines show how long the night lasts on the next calendar da
 - **Astronomical twilight night** — the period when the sun is more than 12° below the horizon (sky is dark enough for most deep-sky work).
 - **Fully dark night** — the period when the sun is more than 18° below the horizon (true astronomical darkness, no twilight glow).
 
-Start and end times are shown in local Helsinki time.
+Start and end times are shown in local time for the selected location.
 
 ### Map overlay and time slider
 
