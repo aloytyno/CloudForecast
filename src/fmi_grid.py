@@ -5,7 +5,7 @@ Downloads TotalCloudCover as NetCDF from the FMI edited scandinavia forecast
 (pal_skandinavia) via the direct download API:
   • Single HTTP request, ~5 MB
   • Regular lat/lon grid: 180 × 182 points at ~0.067° ≈ 7 km resolution
-  • Covers 0–120 h at 3-hourly steps
+  • Covers 0–120 h at 1-hourly steps
 
 Public API
 ----------
@@ -58,7 +58,7 @@ def fetch_cloud_grid(hours_ahead: int = 120) -> GridForecast:
             "starttime":  now.strftime("%Y-%m-%dT%H:%M:%SZ"),
             "endtime":    (now + timedelta(hours=hours_ahead)).strftime("%Y-%m-%dT%H:%M:%SZ"),
             "format":     "netcdf",
-            "timestep":   "180",
+            "timestep":   "60",
             "projection": "epsg:4326",
         },
         timeout=120,

@@ -26,9 +26,9 @@ from src.fmi_client import get_cloud_cover_forecast
 
 
 # ── Geography ──────────────────────────────────────────────────────────────
-FINLAND_LAT = 65.0
-FINLAND_LON = 25.5
-FINLAND_ZOOM = 5
+FINLAND_LAT = 60.85
+FINLAND_LON = 25.0
+FINLAND_ZOOM = 7
 HELSINKI_LAT = 60.1699
 HELSINKI_LON = 24.9384
 HELSINKI_TZ = ZoneInfo("Europe/Helsinki")
@@ -177,6 +177,7 @@ class App(ctk.CTk):
         self._overlay_photo = None             # keep PhotoImage reference (prevent GC)
         self._overlay_canvas_id: int | None = None
         self._overlay_map_state = None         # (zoom, ul_tile, lr_tile) at last render
+        self._map_ts_ids: list[int] = []       # canvas item ids for timestamp overlay
         self._render_after_id: str | None = None   # debounce handle
 
         self._build_ui()
@@ -696,6 +697,31 @@ class App(ctk.CTk):
 
     # ── Slider ────────────────────────────────────────────────────────────
 
+    def _update_map_timestamp(self):
+        """Draw/refresh the time label in the lower-right corner of the map canvas."""
+        canvas = self._map.canvas
+        for item_id in self._map_ts_ids:
+            canvas.delete(item_id)
+        self._map_ts_ids = []
+
+        if self._slider_time is None:
+            return
+
+        dt = self._slider_time.astimezone(HELSINKI_TZ)
+        text = dt.strftime("%a %d.%m.  %H:%M")
+        w, h = canvas.winfo_width(), canvas.winfo_height()
+        if w < 10 or h < 10:
+            return
+
+        x, y = w - 12, h - 12
+        font = ("Arial", 16, "bold")
+        shadow = canvas.create_text(x + 1, y + 1, text=text, anchor="se",
+                                    font=font, fill="#000000", tags="map_timestamp")
+        label  = canvas.create_text(x,     y,     text=text, anchor="se",
+                                    font=font, fill="#ffffff", tags="map_timestamp")
+        self._map_ts_ids = [shadow, label]
+        canvas.lift("map_timestamp")
+
     def _on_slider_change(self, value: float):
         gf = self._grid_forecast
         if gf is None:
@@ -705,6 +731,7 @@ class App(ctk.CTk):
         dt = self._slider_time.astimezone(HELSINKI_TZ)
         self._time_label.configure(text=dt.strftime("%a %d.%m.  %H:%M"))
         self._update_slider_vline()
+        self._update_map_timestamp()
         # Debounce: skip intermediate frames while the slider is dragged quickly
         if self._render_after_id is not None:
             self.after_cancel(self._render_after_id)
@@ -772,6 +799,19 @@ class App(ctk.CTk):
         # Broadcast to (canvas_h, canvas_w)
         oktas_px = gf.oktas[t_idx][lat_idx[:, np.newaxis], lon_idx[np.newaxis, :]]
 
+        # ── Clip to Finland + surrounding waters ──────────────────────────
+        # Mask pixels outside the geographic clip box as transparent
+        CLIP_LAT_MIN, CLIP_LAT_MAX = 58.5, 71.5
+        CLIP_LON_MIN, CLIP_LON_MAX = 18.0, 32.0
+        outside = (
+            (pixel_lats[:, np.newaxis] < CLIP_LAT_MIN) |
+            (pixel_lats[:, np.newaxis] > CLIP_LAT_MAX) |
+            (pixel_lons[np.newaxis, :] < CLIP_LON_MIN) |
+            (pixel_lons[np.newaxis, :] > CLIP_LON_MAX)
+        )
+        oktas_px = oktas_px.copy()
+        oktas_px[outside] = -1
+
         # ── Map oktas → RGBA via lookup table ─────────────────────────────
         rgba_table = np.array(_OKTA_RGBA, dtype=np.uint8)   # (9, 4)
         img_array = rgba_table[np.clip(oktas_px, 0, 8)]     # (canvas_h, canvas_w, 4)
@@ -816,4 +856,6 @@ class App(ctk.CTk):
                 # Keep z-order correct as new tiles stream in
                 self._map.canvas.lift("cloud_overlay")
                 self._map.manage_z_order()
+        if self._map_ts_ids:
+            self._map.canvas.lift("map_timestamp")
         self.after(100, self._poll_map_state)
