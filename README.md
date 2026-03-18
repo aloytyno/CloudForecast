@@ -63,7 +63,7 @@ All forecast data comes from FMI's open data services:
 
 A pre-built Windows executable is available on the [Releases page](https://github.com/aloytyno/CloudForecast/releases/latest).
 
-**[⬇ Download PilviEnnuste.exe](https://github.com/aloytyno/CloudForecast/releases/download/v1.0.0/PilviEnnuste.exe)**
+**[⬇ Download PilviEnnuste.exe](https://github.com/aloytyno/CloudForecast/releases/download/v1.1.0/PilviEnnuste.exe)**
 
 Just download and run — no installation or Python required. Windows may show a security warning on first launch since the executable is unsigned; click **"More info → Run anyway"** to proceed.
 
